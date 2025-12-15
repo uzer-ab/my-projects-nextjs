@@ -13,3 +13,52 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model test {
+  id        Int      @id @default(autoincrement())
+  name      String
+}
+
+model Users {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  name      String
+  title     String?
+  intro     String?
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  projects  Projects[] // relation: one user → many projects
+}
+
+model Projects {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  toolId      Int
+  name        String
+  description String    @db.VarChar(1024) // or just String if you don't care about exact length
+  show        Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  user        Users     @relation(fields: [userId], references: [id])
+  tool        Tools     @relation(fields: [toolId], references: [id])
+  link        ProjectLinks[]
+}
+
+model ProjectLinks {
+  id          Int       @id @default(autoincrement())
+  projectId   Int
+  title       String
+  url         String
+
+  project     Projects  @relation(fields: [projectId], references: [id])
+}
+
+model Tools {
+  id          Int       @id @default(autoincrement())
+  name        String
+  type        String
+  description String
+
+  projects  Projects[] // relation: one tool → many projects
+}
