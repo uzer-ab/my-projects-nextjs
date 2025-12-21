@@ -30,6 +30,7 @@ export class ProjectsRepository {
 
       t.id          AS tool_id,
       t.project_id  AS tool_project_id,
+      t.type        AS tool_type,
       t.name        AS tool_name,
 
       pl.id         AS link_id,
@@ -78,6 +79,7 @@ export class ProjectsRepository {
           tools[r.tool_id] = {
             id: r.tool_id,
             name: r.tool_name!,
+            type: r.tool_type!,
           };
         }
         if (!entry.tools.includes(r.tool_id)) {

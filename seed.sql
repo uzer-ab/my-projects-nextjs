@@ -19,6 +19,14 @@ INSERT INTO "project_links" ("id", "project_id", "title", "url")
 VALUES ('1', '1', 'Test Link', 'test.link.example.com');
 
 
+INSERT INTO "project_links" ("id", "project_id", "title", "url")
+VALUES ('2', '2', 'Test Link 2', 'test.link2.example.com');
+
+
+INSERT INTO "project_links" ("id", "project_id", "title", "url")
+VALUES ('3', '1', 'Test Link 3', 'test.link.example.com');
+
+
 INSERT INTO "projects" ("id", "username", "name", "description", "show", "created_at")
 VALUES ('2', 'uzera', 'Scraper', '', '1', now());
 

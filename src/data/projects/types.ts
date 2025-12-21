@@ -16,6 +16,7 @@ export type RawRow = {
   // tools
   tool_id: number | null;
   tool_name: string | null;
+  tool_type: string | null;
 
   // links
   link_id: number | null;
@@ -58,7 +59,10 @@ export type UserDTO = {
   name: string | null;
 };
 
-export type ToolsMap = Record<number, { id: number; name: string }>;
+export type ToolsMap = Record<
+  number,
+  { id: number; name: string; type: string }
+>;
 export type LinksMap = Record<
   number,
   { id: number; title: string; url: string }
