@@ -40,18 +40,17 @@ export type GetUserProjectsParams = {
 };
 
 // src/data/projects/types.ts
-export type ProjectDTO = Record<
-  number,
-  {
-    id: number;
-    name: string;
-    description: string;
-    show: boolean;
-    createdAt: Date;
-    tools: number[];
-    links: number[];
-  }
->;
+export type ProjectType = {
+  id: number;
+  name: string;
+  description: string;
+  show: boolean;
+  createdAt: Date;
+  tools: number[];
+  links: number[];
+};
+
+export type ProjectDTO = Record<number, ProjectType>;
 
 export type UserDTO = {
   id: number;

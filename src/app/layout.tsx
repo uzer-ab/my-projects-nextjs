@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import "./globals.css";
-import "./styles.css"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -28,9 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-background text-foreground font-sans antialiased">
-        {children}
+    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+      <body className="text-foreground font-sans antialiased">
+        <div>
+          {children}
+        </div>
       </body>
     </html>
   );
