@@ -10,12 +10,12 @@ export function Project(props: ProjectProps) {
 
     return (
         <div className="animate-fade-up" style={{ animationDelay: '0ms' }}>
-            <article className="group relative card-glass card-glass-hover rounded-xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/30 hover:-translate-y-1" style={{ animationDelay: '0ms' }}>
+            <article className="group relative card-glass card-glass-hover rounded-xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/30" style={{ animationDelay: '0ms' }}>
                 <div className="relative h-48 overflow-hidden">
                     <img
                         src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400&fit=crop"
                         alt="E-Commerce Platform"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 will-change-transform"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-card to-transparent"></div>
                 </div>
