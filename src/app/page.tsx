@@ -1,15 +1,22 @@
-// import Image from "next/image";
-// // import { testDbConnection } from "../lib/db";
+import { auth } from "@/lib/auth";
+import { Navbar } from "@/components/landing/Navbar";
+import { Hero } from "@/components/landing/Hero";
+import { Features } from "@/components/landing/Features";
+import { Benefits } from "@/components/landing/Benefits";
+import { CTA } from "@/components/landing/CTA";
 
-// export default async function Home() {
-//   // await testDbConnection();
-//   return <div>Hello!</div>;
-// }
+export default async function Home() {
+  const session = await auth();
+  const isAuthenticated = !!session?.user;
+  const username = session?.user?.username;
 
-export default function Test() {
   return (
-    <div className="p-20 bg-red-500 text-white text-4xl rounded-full">
-      RED BOX TEST
-    </div>
+    <main>
+      <Navbar isAuthenticated={isAuthenticated} username={username} />
+      <Hero />
+      <Features />
+      <Benefits />
+      <CTA />
+    </main>
   );
 }
