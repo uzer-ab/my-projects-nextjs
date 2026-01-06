@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import "./globals.css";
+import { Footer } from "@/components/Footer";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -30,7 +31,12 @@ export default function RootLayout({
     <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
       <body className="text-foreground font-sans antialiased">
         <div>
-          {children}
+          <div className="min-h-screen">
+            {children}
+            <footer className="border-t border-border/50 py-8">
+              <Footer />
+            </footer>
+          </div>
         </div>
       </body>
     </html>

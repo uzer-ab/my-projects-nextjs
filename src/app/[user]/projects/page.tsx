@@ -32,7 +32,7 @@ export default async function ProjectsPage({ params }: Props) {
   const { user, projects, tools, links } = result as UserProjectsResult;
   console.log({ user, projects, tools, links });
   return (
-    <div className="min-h-screen">
+    <>
       <header className="relative overflow-hidden">
         <Header />
       </header>
@@ -40,10 +40,6 @@ export default async function ProjectsPage({ params }: Props) {
       <main>
         <Projects projects={projects} />
       </main>
-
-      <footer className="border-t border-border/50 py-8">
-        <Footer />
-      </footer>
-    </div>
+    </>
   );
 }
