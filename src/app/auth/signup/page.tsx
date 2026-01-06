@@ -1,7 +1,8 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState } from "react";
+import { register, type AuthState } from "@/lib/actions/auth";
 import {
     AuthLayout,
     AuthInput,
@@ -32,18 +33,10 @@ const SignupIcon = () => (
 );
 
 export default function SignupPage() {
-    const [name, setName] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        // TODO: Implement signup logic
-        console.log('Signup:', { name, username, password });
-        setIsLoading(false);
-    };
+    const [state, formAction, isPending] = useActionState<AuthState | undefined, FormData>(
+        register,
+        undefined
+    );
 
     return (
         <AuthLayout
@@ -51,61 +44,44 @@ export default function SignupPage() {
             title="Create Account"
             subtitle="Join us and start your journey"
         >
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form action={formAction} className="space-y-4">
+                {state?.error && (
+                    <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">
+                        {state.error}
+                    </div>
+                )}
+
                 <AuthInput
                     id="name"
+                    name="name"
                     type="text"
                     label="Full Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
                     placeholder="John Doe"
                     required
                 />
 
                 <AuthInput
                     id="username"
+                    name="username"
                     type="text"
                     label="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
                     placeholder="yourusername"
                     required
                 />
 
                 <AuthInput
                     id="password"
+                    name="password"
                     type="password"
                     label="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
                     minLength={8}
                 />
 
-                {/* Terms */}
-                <div className="flex items-start gap-3">
-                    <input
-                        id="terms"
-                        type="checkbox"
-                        required
-                        className="mt-1 h-4 w-4 rounded border-border/50 bg-secondary/50 text-primary focus:ring-primary/50 focus:ring-offset-0"
-                    />
-                    <label htmlFor="terms" className="text-sm text-muted-foreground">
-                        I agree to the{' '}
-                        <Link href="/terms" className="text-primary hover:text-primary/80 transition-colors">
-                            Terms of Service
-                        </Link>
-                        {' '}and{' '}
-                        <Link href="/privacy" className="text-primary hover:text-primary/80 transition-colors">
-                            Privacy Policy
-                        </Link>
-                    </label>
-                </div>
-
                 <AuthButton
                     type="submit"
-                    isLoading={isLoading}
+                    isLoading={isPending}
                     loadingText="Creating account..."
                 >
                     Create Account

@@ -1,14 +1,14 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
+import { login, type AuthState } from "@/lib/actions/auth";
 import {
     AuthLayout,
     AuthInput,
     AuthButton,
-    AuthDivider,
     AuthFooter,
-    SocialLoginButtons
 } from "@/components/auth";
 
 const LoginIcon = () => (
@@ -31,17 +31,13 @@ const LoginIcon = () => (
 );
 
 export default function LoginPage() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get("redirectUrl") || "/";
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        // TODO: Implement login logic
-        console.log('Login:', { username, password });
-        setIsLoading(false);
-    };
+    const [state, formAction, isPending] = useActionState<AuthState | undefined, FormData>(
+        login,
+        undefined
+    );
 
     return (
         <AuthLayout
@@ -49,23 +45,29 @@ export default function LoginPage() {
             title="Welcome Back"
             subtitle="Sign in to your account to continue"
         >
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form action={formAction} className="space-y-5">
+                <input type="hidden" name="redirectUrl" value={redirectUrl} />
+
+                {state?.error && (
+                    <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">
+                        {state.error}
+                    </div>
+                )}
+
                 <AuthInput
                     id="username"
+                    name="username"
                     type="text"
                     label="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
                     placeholder="yourusername"
                     required
                 />
 
                 <AuthInput
                     id="password"
+                    name="password"
                     type="password"
                     label="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
                     rightLabel={
@@ -80,16 +82,12 @@ export default function LoginPage() {
 
                 <AuthButton
                     type="submit"
-                    isLoading={isLoading}
+                    isLoading={isPending}
                     loadingText="Signing in..."
                 >
                     Sign In
                 </AuthButton>
             </form>
-
-            {/* <AuthDivider /> */}
-
-            {/* <SocialLoginButtons /> */}
 
             <AuthFooter
                 text="Don't have an account?"
