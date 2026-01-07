@@ -14,111 +14,77 @@ export class ProjectsRepository {
     });
   }
 
-  async findByUsername(username: string, show = true) {
-    const rows = await prisma.$queryRaw<RawRow[]>`
-    SELECT
-      p.id          AS project_id,
-      p.name        AS project_name,
-      p.description AS project_description,
-      p.show        AS project_show,
-      p.created_at  AS project_created_at,
-      p.username    AS project_username,
+  async findByUsername(username: string, onlyVisible = true) {
+    const where: any = {
+      username: username,
+    };
 
-      u.id          AS user_id,
-      u.username    AS user_username,
-      u.name        AS user_name,
+    if (onlyVisible) {
+      where.show = true;
+    }
 
-      t.id          AS tool_id,
-      t.project_id  AS tool_project_id,
-      t.type        AS tool_type,
-      t.name        AS tool_name,
+    const projectsData = await prisma.projects.findMany({
+      where,
+      include: {
+        user: true,
+        tool: true,
+        link: true,
+      },
+      orderBy: { created_at: "desc" },
+    });
 
-      pl.id         AS link_id,
-      pl.project_id AS link_project_id,
-      pl.title      AS link_title,
-      pl.url        AS link_url
-
-    FROM projects p
-    JOIN users u ON u.username = p.username
-    LEFT JOIN tools t ON t.project_id = p.id
-    LEFT JOIN project_links pl ON pl.project_id = p.id
-    WHERE u.username = ${username} AND p.show = ${show}
-    ORDER BY p.created_at DESC
-  `;
-
-    if (rows.length === 0) {
+    if (projectsData.length === 0) {
       return null;
     }
 
-    const first = rows[0];
-
+    const firstProject = projectsData[0];
     const user = {
-      id: first.user_id,
-      username: first.user_username,
-      name: first.user_name,
+      id: firstProject.user.id,
+      username: firstProject.user.username,
+      name: firstProject.user.name,
     };
 
     const projects: ProjectDTO = {};
     const tools: ToolsMap = {};
     const links: LinksMap = {};
 
-    const projectToolAndLinksMap: Record<
-      number,
-      { tools: number[]; links: number[] }
-    > = {};
+    for (const p of projectsData) {
+      const toolIds: number[] = [];
+      const linkIds: number[] = [];
 
-    for (const r of rows) {
-      if (!projectToolAndLinksMap[r.project_id]) {
-        projectToolAndLinksMap[r.project_id] = { tools: [], links: [] };
-      }
-      const entry = projectToolAndLinksMap[r.project_id];
-
-      // tools
-      if (r.tool_id != null) {
-        if (!tools[r.tool_id]) {
-          tools[r.tool_id] = {
-            id: r.tool_id,
-            name: r.tool_name!,
-            type: r.tool_type!,
+      // Process tools
+      for (const t of p.tool) {
+        if (!tools[t.id]) {
+          tools[t.id] = {
+            id: t.id,
+            name: t.name,
+            type: t.type,
           };
         }
-        if (!entry.tools.includes(r.tool_id)) {
-          entry.tools.push(r.tool_id);
-        }
+        toolIds.push(t.id);
       }
 
-      // links
-      if (r.link_id != null) {
-        if (!links[r.link_id]) {
-          links[r.link_id] = {
-            id: r.link_id,
-            title: r.link_title!,
-            url: r.link_url!,
+      // Process links
+      for (const l of p.link) {
+        if (!links[l.id]) {
+          links[l.id] = {
+            id: l.id,
+            title: l.title,
+            url: l.url,
           };
         }
-        if (!entry.links.includes(r.link_id)) {
-          entry.links.push(r.link_id);
-        }
+        linkIds.push(l.id);
       }
-    }
 
-    for (const r of rows) {
-      const existing = projects[r.project_id];
-
-      if (!existing) {
-        const toolIds = projectToolAndLinksMap[r.project_id].tools;
-        const linkIds = projectToolAndLinksMap[r.project_id].links;
-
-        projects[r.project_id] = {
-          id: r.project_id,
-          name: r.project_name,
-          description: r.project_description,
-          show: r.project_show,
-          createdAt: r.project_created_at,
-          tools: toolIds ? Array.from(toolIds) : [],
-          links: linkIds ? Array.from(linkIds) : [],
-        };
-      }
+      projects[p.id] = {
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        show: p.show,
+        createdAt: p.created_at,
+        tools: toolIds,
+        links: linkIds,
+      };
     }
 
     return { user, projects, tools, links } as UserProjectsResult;

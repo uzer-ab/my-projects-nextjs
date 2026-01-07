@@ -18,7 +18,11 @@ export async function login(
   try {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
-    const redirectUrl = (formData.get("redirectUrl") as string) || "/";
+    let redirectUrl = formData.get("redirectUrl") as string;
+
+    if (!redirectUrl || redirectUrl === "/") {
+      redirectUrl = `/${username}/dashboard`;
+    }
 
     if (!username || !password) {
       return { error: "Username and password are required" };
@@ -92,7 +96,7 @@ export async function register(
     await signIn("credentials", {
       username,
       password,
-      redirectTo: "/",
+      redirectTo: `/${username}/dashboard`,
     });
 
     return { success: true };

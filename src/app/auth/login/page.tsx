@@ -30,7 +30,9 @@ const LoginIcon = () => (
     </svg>
 );
 
-export default function LoginPage() {
+import { Suspense } from "react";
+
+function LoginFormComponent() {
     const searchParams = useSearchParams();
     const redirectUrl = searchParams.get("redirectUrl") || "/";
 
@@ -40,54 +42,62 @@ export default function LoginPage() {
     );
 
     return (
+        <form action={formAction} className="space-y-5">
+            <input type="hidden" name="redirectUrl" value={redirectUrl} />
+
+            {state?.error && (
+                <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    {state.error}
+                </div>
+            )}
+
+            <AuthInput
+                id="username"
+                name="username"
+                type="text"
+                label="Username"
+                placeholder="yourusername"
+                required
+            />
+
+            <AuthInput
+                id="password"
+                name="password"
+                type="password"
+                label="Password"
+                placeholder="••••••••"
+                required
+                rightLabel={
+                    <Link
+                        href="/auth/forgot-password"
+                        className="text-sm text-primary hover:text-primary/80 transition-colors"
+                    >
+                        Forgot password?
+                    </Link>
+                }
+            />
+
+            <AuthButton
+                type="submit"
+                isLoading={isPending}
+                loadingText="Signing in..."
+            >
+                Sign In
+            </AuthButton>
+        </form>
+    );
+}
+
+export default function LoginPage() {
+    return (
         <AuthLayout
             icon={<LoginIcon />}
             title="Welcome Back"
             subtitle="Sign in to your account to continue"
         >
-            <form action={formAction} className="space-y-5">
-                <input type="hidden" name="redirectUrl" value={redirectUrl} />
-
-                {state?.error && (
-                    <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">
-                        {state.error}
-                    </div>
-                )}
-
-                <AuthInput
-                    id="username"
-                    name="username"
-                    type="text"
-                    label="Username"
-                    placeholder="yourusername"
-                    required
-                />
-
-                <AuthInput
-                    id="password"
-                    name="password"
-                    type="password"
-                    label="Password"
-                    placeholder="••••••••"
-                    required
-                    rightLabel={
-                        <Link
-                            href="/auth/forgot-password"
-                            className="text-sm text-primary hover:text-primary/80 transition-colors"
-                        >
-                            Forgot password?
-                        </Link>
-                    }
-                />
-
-                <AuthButton
-                    type="submit"
-                    isLoading={isPending}
-                    loadingText="Signing in..."
-                >
-                    Sign In
-                </AuthButton>
-            </form>
+            <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading...</div>}>
+                <LoginFormComponent />
+            </Suspense>
 
             <AuthFooter
                 text="Don't have an account?"

@@ -5,4 +5,6 @@ export type HeaderData = {
   description: string;
   techAndTools: string[];
   resumeDownloadLink: string | null;
+  githubUrl?: string | null;
+  linkedinUrl?: string | null;
 };

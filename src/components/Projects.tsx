@@ -1,13 +1,15 @@
-import type { ProjectDTO } from "@/data/projects/types"
+import type { LinksMap, ProjectDTO, ToolsMap } from "@/data/projects/types"
 import { Project } from "./ui/ProjectCard"
 import type { ProjectType } from "@/data/projects/types"
 
 type ProjectsProps = {
-    projects: ProjectDTO
+    projects: ProjectDTO,
+    tools: ToolsMap,
+    links: LinksMap
 }
 
 export function Projects(props: ProjectsProps) {
-    const { projects } = props
+    const { projects, tools, links } = props
     const projectsList = Object.values(projects);
     return (
         <section className="py-20 px-4">
@@ -25,9 +27,9 @@ export function Projects(props: ProjectsProps) {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                     {projectsList.map((project: ProjectType, idx: number) =>
-                        <Project key={idx} project={project} />
+                        <Project key={idx} project={project} tools={tools} links={links} />
                     )}
                 </div>
 

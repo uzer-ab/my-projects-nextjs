@@ -25,9 +25,15 @@ model users {
   password    String
   name        String
   title       String?
-  intro       String?
+  bio         String?
+  description String?   @db.VarChar(500)
+  techStack   String[]
+  resumeUrl   String?
+  githubUrl   String?
+  linkedinUrl String?
   active      Boolean   @default(true)
   created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now()) @updatedAt
 
   projects  projects[] // relation: one user → many projects
 }
@@ -43,6 +49,7 @@ model projects {
   user        users     @relation(fields: [username], references: [username])
   link        project_links[]
   tool        tools[]
+  images      project_images[]
 }
 
 model project_links {
@@ -51,7 +58,7 @@ model project_links {
   title       String
   url         String
 
-  project     projects  @relation(fields: [project_id], references: [id])
+  project     projects  @relation(fields: [project_id], references: [id], onDelete: Cascade)
 }
 
 model tools {
@@ -61,5 +68,15 @@ model tools {
   type        String
   description String
 
-  projects    projects  @relation(fields: [project_id], references: [id])
+  projects    projects  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+}
+
+model project_images {
+  id          Int       @id @default(autoincrement())
+  project_id  Int
+  url         String
+  alt         String?
+  order       Int       @default(0)
+
+  project     projects  @relation(fields: [project_id], references: [id], onDelete: Cascade)
 }

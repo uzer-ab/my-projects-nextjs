@@ -1,25 +1,37 @@
-import type { ProjectType } from "@/data/projects/types"
+"use client";
+
+import type { LinksMap, ProjectType, ToolsMap } from "@/data/projects/types"
+import { useState } from "react";
 
 type ProjectProps = {
     project: ProjectType
+    tools: ToolsMap
+    links: LinksMap
 }
 
 export function Project(props: ProjectProps) {
-    const { project } = props;
-    const { links, tools } = project
+    const { project, tools, links } = props;
+    const projectToolIds = project.tools;
+    const projectLinkIds = project.links;
+
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const description = project.description || "";
+    const MAX_LENGTH = 120;
+    const shouldTruncate = description.length > MAX_LENGTH;
 
     return (
-        <div className="animate-fade-up" style={{ animationDelay: '0ms' }}>
-            <article className="group relative card-glass card-glass-hover rounded-xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/30" style={{ animationDelay: '0ms' }}>
+        <div className={`animate-fade-up ${isExpanded ? 'h-auto' : 'h-[500px]'}`} style={{ animationDelay: '0ms' }}>
+            <article className="group relative card-glass card-glass-hover rounded-xl border border-border/50 overflow-hidden transition-all duration-500 hover:border-primary/30 h-full flex flex-col" style={{ animationDelay: '0ms' }}>
                 <div className="relative h-48 overflow-hidden">
                     <img
                         src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400&fit=crop"
                         alt="E-Commerce Platform"
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 will-change-transform"
                     />
-                    <div className="absolute inset-0 bg-linear-to-t from-card to-transparent"></div>
+                    {/* <div className="absolute inset-0 bg-linear-to-t from-card to-transparent"></div> */}
                 </div>
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-4 flex flex-col flex-1">
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <svg
@@ -68,15 +80,27 @@ export function Project(props: ProjectProps) {
                             </a>
                         </div>
                     </div>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                        {project.description}
-                    </p>
+                    <div className="flex-1">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                            {shouldTruncate && !isExpanded
+                                ? `${description.slice(0, MAX_LENGTH)}...`
+                                : description}
+                        </p>
+                        {shouldTruncate && (
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="text-xs text-primary mt-2 hover:underline focus:outline-hidden"
+                            >
+                                {isExpanded ? "Show Less" : "Show More"}
+                            </button>
+                        )}
+                    </div>tool
                     <div className="flex flex-wrap gap-2 pt-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono bg-secondary/50 text-primary border border-border/30 hover:bg-primary/10 transition-colors duration-200">React</span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono bg-secondary/50 text-primary border border-border/30 hover:bg-primary/10 transition-colors duration-200">Node.js</span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono bg-secondary/50 text-primary border border-border/30 hover:bg-primary/10 transition-colors duration-200">PostgreSQL</span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono bg-secondary/50 text-primary border border-border/30 hover:bg-primary/10 transition-colors duration-200">Stripe</span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono bg-secondary/50 text-primary border border-border/30 hover:bg-primary/10 transition-colors duration-200">Tailwind CSS</span>
+                        {projectToolIds?.map((toolId, idx) => (
+                            <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono bg-secondary/50 text-primary border border-border/30 hover:bg-primary/10 transition-colors duration-200">
+                                {tools[toolId].name}
+                            </span>
+                        ))}
                     </div>
                 </div>
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">

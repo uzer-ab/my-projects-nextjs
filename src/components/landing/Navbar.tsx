@@ -24,7 +24,7 @@ export function Navbar({ isAuthenticated, username }: NavbarProps) {
                             <span className="text-white font-bold text-xl">P</span>
                         </div>
                         <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                            ProjectHub
+                            CodeFolio
                         </span>
                     </Link>
 

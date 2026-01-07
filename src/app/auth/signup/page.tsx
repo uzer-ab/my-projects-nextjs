@@ -88,9 +88,9 @@ export default function SignupPage() {
                 </AuthButton>
             </form>
 
-            <AuthDivider />
+            {/* <AuthDivider /> */}
 
-            <SocialLoginButtons />
+            {/* <SocialLoginButtons /> */}
 
             <AuthFooter
                 text="Already have an account?"
